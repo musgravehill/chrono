@@ -87,9 +87,9 @@ void loop(){
 
   if ( s1 != 0 && s2 != 0 )
   {
-    bullet_v = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t
-    bullet_j020 = 0.20 * bullet_v * bullet_v / 2;
-    bullet_j025 = 0.20 * bullet_v * bullet_v / 2; 
+    bullet_v = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t,  s=60mm=0.06m
+    bullet_j020 = 0.20 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
+    bullet_j025 = 0.25 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
   }
   else
   {
