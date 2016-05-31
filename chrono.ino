@@ -4,7 +4,6 @@
 
 Adafruit_PCD8544 display = Adafruit_PCD8544(11,10,9,8,7);
 
-double data;
 volatile unsigned char s1 = 0;
 volatile unsigned char s2 = 0;
 
@@ -78,28 +77,42 @@ void setup()
   attachInterrupt(1, sensor_2, FALLING);
 }
 
-void loop()
-{
+void loop(){
+  unsigned float bullet_j020 =0;
+  unsigned float bullet_j025 =0;
+  double bullet_v;
+
   while ( s1 == 0 && s2 == 0 ) ;
   _delay_ms(800); // wait 800 ms
 
   if ( s1 != 0 && s2 != 0 )
   {
-    data = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t
+    bullet_v = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t
   }
   else
   {
-    data = 0;
+    bullet_v = 0;
   }
 
   display.clearDisplay(); 
   display.setTextColor(BLACK);
+  display.setTextSize(2); 
+  
   display.setCursor(0,3); 
-  display.setTextSize(4); 
-  display.println((int)data, DEC); 
-  display.setCursor(32,40);
-  display.setTextSize(1);
-  display.println("m/s");
+  display.print("m/s");
+  display.setCursor(0,9);
+  display.print((int)bullet_v, DEC); 
+  
+  display.setCursor(10,3); 
+  display.print("J 0.2");
+  display.setCursor(10,9);
+  display.print((float)bullet_j020, DEC); 
+  
+  display.setCursor(20,3); 
+  display.print("J 0.25");
+  display.setCursor(20,9);
+  display.print((float)bullet_j020, DEC); 
+  
   display.display();
 
   TCCR1B = 0;
@@ -113,7 +126,7 @@ void sensor_1()
 {
   if ( s1 == 0 )
   {
-    TCCR1B = (1«CS10); // Timer/Counter 1 running (no prescaling)
+    TCCR1B = (1<<CS10); // Timer/Counter 1 running (no prescaling)
     s1 = 1;
   }
 }
