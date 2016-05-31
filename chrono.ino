@@ -2,10 +2,10 @@
 #include <Adafruit_PCD8544.h>
 #include <util/delay.h>
 
-Adafruit_PCD8544 display = Adafruit_PCD8544(11,10,9,8,7);
+Adafruit_PCD8544 display = Adafruit_PCD8544(11, 10, 9, 8, 7);
 
-volatile unsigned char s1 = 0;
-volatile unsigned char s2 = 0;
+volatile unsigned char bullet_is_start = 0;
+volatile unsigned char bullet_is_end = 0;
 
 // Timer/Counter 0 initialization
 void Timer0_Init( void )
@@ -33,7 +33,7 @@ void Timer1_Init( void )
   // Bits: COM1A1 COM1A0 COM1B1 COM1B0 - - WGM11 WGM10
   TCCR1A = 0;
 
-  // Bits: ICNC1 ICES1 - WGM13 WGM12 CS12 CS11 CS10
+  // Bits: ICNC1 ICEbullet_is_start - WGM13 WGM12 CS12 CS11 CS10
   TCCR1B = 0;
 
   // Bits: FOC1A FOC1B - - - - - -
@@ -48,17 +48,18 @@ void Timer1_Init( void )
 
 void setup()
 {
+  Serial.begin(9600);
 
   //pinMode(13, OUTPUT); //LCD backlight
   //digitalWrite(13, HIGH);
 
-  display.begin(); 
+  display.begin();
   display.setContrast(80);
-  display.clearDisplay(); 
+  display.clearDisplay();
   display.setTextColor(BLACK);
-  display.setCursor(0,2); 
-  display.setTextSize(1);
-  display.println("chrono v.1");
+  display.setCursor(0, 2);
+  display.setTextSize(2);
+  display.println("chrono v.2");
   display.display();
 
   // Global disable interrupts
@@ -71,76 +72,71 @@ void setup()
   Timer1_Init();
 
   // Global enable interrupts
-  sei(); 
+  sei();
 
   attachInterrupt(0, sensor_1, FALLING);
   attachInterrupt(1, sensor_2, FALLING);
 }
 
-void loop(){
-  unsigned float bullet_j020 =0;
-  unsigned float bullet_j025 =0;
-  double bullet_v;
+void loop() {
+  float bullet_j020 = 0;
+  float bullet_j025 = 0;
+  double bullet_v;  
 
-  while ( s1 == 0 && s2 == 0 ) ;
+  while ( bullet_is_start == 0 && bullet_is_end == 0 ) ;
   _delay_ms(800); // wait 800 ms
 
-  if ( s1 != 0 && s2 != 0 )
-  {
+  if ( bullet_is_start != 0 && bullet_is_end != 0)  {
     bullet_v = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t,  s=60mm=0.06m
     bullet_j020 = 0.20 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
-    bullet_j025 = 0.25 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
+    bullet_j025 = 0.25 * bullet_v * bullet_v / 2000; // kg*V^2 / 2  
   }
-  else
-  {
+  else  {
     bullet_v = 0;
     bullet_j020 = 0;
-    bullet_j025 = 0;
+    bullet_j025 = 0;    
   }
 
-  display.clearDisplay(); 
+  display.clearDisplay();
   display.setTextColor(BLACK);
-  display.setTextSize(2); 
-  
-  display.setCursor(0,3); 
-  display.print("m/s");
-  display.setCursor(0,9);
-  display.print((int)bullet_v, DEC); 
-  
-  display.setCursor(10,3); 
-  display.print("J 0.2");
-  display.setCursor(10,9);
-  display.print((float)bullet_j020, DEC); 
-  
-  display.setCursor(20,3); 
-  display.print("J 0.25");
-  display.setCursor(20,9);
-  display.print((float)bullet_j025, DEC); 
-  
+  display.setTextSize(1);
+
+  display.setCursor(0, 3);
+  display.print("M/S");
+  display.setCursor(44, 3); //hor,ver
+  display.print((int)bullet_v, DEC);
+
+  display.setCursor(0, 15);
+  display.print("J.20");
+  display.setCursor(44, 15);
+  display.println((float)bullet_j020, 2);
+
+  display.setCursor(0, 27);
+  display.print("J.25");
+  display.setCursor(44, 27);
+  display.println((float)bullet_j025, 2);
+
   display.display();
 
   TCCR1B = 0;
   TCNT1 = 0;
 
-  s1 = 0;
-  s2 = 0;
+  bullet_is_start = 0;
+  bullet_is_end = 0;
 }
 
 void sensor_1()
 {
-  if ( s1 == 0 )
-  {
-    TCCR1B = (1<<CS10); // Timer/Counter 1 running (no prescaling)
-    s1 = 1;
+  if ( bullet_is_start == 0 )  {
+    TCCR1B = (1 << CS10); // Timer/Counter 1 running (no prescaling)
+    bullet_is_start = 1;
   }
 }
 
 void sensor_2()
 {
-  if ( s2 == 0 )
-  {
+  if ( bullet_is_end == 0 )  {
     TCCR1B = 0; // Timer/Counter 1 stopped (no clock source)
-    s2 = 1;
+    bullet_is_end = 1;
   }
 }
-
