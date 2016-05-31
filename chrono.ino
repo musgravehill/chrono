@@ -88,10 +88,14 @@ void loop(){
   if ( s1 != 0 && s2 != 0 )
   {
     bullet_v = 0.06 / (TCNT1 * (1.0 / 16000000.0)); // v = s / t
+    bullet_j020 = 0.20 * bullet_v * bullet_v / 2;
+    bullet_j025 = 0.20 * bullet_v * bullet_v / 2; 
   }
   else
   {
     bullet_v = 0;
+    bullet_j020 = 0;
+    bullet_j025 = 0;
   }
 
   display.clearDisplay(); 
@@ -111,7 +115,7 @@ void loop(){
   display.setCursor(20,3); 
   display.print("J 0.25");
   display.setCursor(20,9);
-  display.print((float)bullet_j020, DEC); 
+  display.print((float)bullet_j025, DEC); 
   
   display.display();
 
