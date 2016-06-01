@@ -21,7 +21,7 @@ void display_displayInfo() {
   display.setCursor(0, 39);
   display.print("RATE");
   display.setCursor(44, 39);
-  display.println((float)bullet_firingRate, 2);
+  display.print(bullet_firingRate, DEC);
 
   
 
