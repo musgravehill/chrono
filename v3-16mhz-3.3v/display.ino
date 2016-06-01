@@ -18,22 +18,35 @@ void display_displayInfo() {
   display.setCursor(44, 27);
   display.println((float)bullet_j025, 2);
 
+  display.setCursor(0, 39);
+  display.print("RATE");
+  display.setCursor(44, 39);
+  display.println((float)bullet_firingRate, 2);
+
+  
+
   display.display();
 }
 
-void display_init(){
+void display_init() {
   display.begin();
-  display.setContrast(70); 
-  display.clearDisplay(); 
+  display.setContrast(70);
+  display.clearDisplay();
 
-  display.invertDisplay(true);
+  display.fillRect(0, 0, 84, 48, BLACK);
+  display.display();
+  delay(1000);
+  display.clearDisplay();
+  
   display.setTextSize(2);
   display.setTextColor(BLACK);
-  display.setCursor(0,0);
-  display.println("Hello, world!");
-  delay(1000); 
-  
-  display.invertDisplay(false);  
-  
-  display.display();  
-  }
+  display.setCursor(0, 0);
+  display.println("BORIS");
+  display.println("CHRONO");
+  display.println("V.3");
+  display.display();
+  delay(1000);
+
+
+
+}

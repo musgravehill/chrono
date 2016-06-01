@@ -13,9 +13,15 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(9, 8, 7, 6, 5);
 
 volatile unsigned char bullet_is_start = 0;
 volatile unsigned char bullet_is_end = 0;
+double bullet_v;
+float bullet_j020 = 0;
+float bullet_j025 = 0;
+unsigned long bullet_short1_micros = 0;
+unsigned int bullet_firingRate = 0; // shots/second
+unsigned byte bullet_counter = 0;
+
 
 void setup()   {
-
   display_init();
 
   cli(); // Global disable interrupts
@@ -28,10 +34,6 @@ void setup()   {
 }
 
 void loop() {
-  float bullet_j020 = 0;
-  float bullet_j025 = 0;
-  double bullet_v;
-
   while ( bullet_is_start == 0 && bullet_is_end == 0 ) ;
   _delay_ms(800); // wait 800 ms
 
@@ -40,12 +42,21 @@ void loop() {
     bullet_j020 = 0.20 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
     bullet_j025 = 0.25 * bullet_v * bullet_v / 2000; // kg*V^2 / 2
 
+    if (bullet_counter == 1) {
+      bullet_short1_micros = micros();
+    }
+    if (bullet_counter == 5) {
+      bullet_counter = 0;
+      bullet_firingRate = 5000000 / (micros() - bullet_short1_micros);
+    }
+
     display_displayInfo();
   }
   else  {
     bullet_v = 0;
     bullet_j020 = 0;
-    bullet_j025 = 0;   
+    bullet_j025 = 0;
+    bullet_firingRate = 0;
   }
 
   TCCR1B = 0;
