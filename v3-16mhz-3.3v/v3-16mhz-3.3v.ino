@@ -13,15 +13,15 @@ Adafruit_PCD8544 display = Adafruit_PCD8544(9, 8, 7, 6, 5);
 
 volatile unsigned char bullet_is_start = 0;
 volatile unsigned char bullet_is_end = 0;
+volatile uint8_t bullet_counter = 0;
 double bullet_v;
 float bullet_j020 = 0;
 float bullet_j025 = 0;
 unsigned long bullet_short1_micros = 0;
-unsigned int bullet_firingRate = 0; // shots/second
-unsigned byte bullet_counter = 0;
-
+unsigned int bullet_firingRate = 0; // shots/minute
 
 void setup()   {
+  Serial.begin(9600);
   display_init();
 
   cli(); // Global disable interrupts
@@ -44,10 +44,13 @@ void loop() {
 
     if (bullet_counter == 1) {
       bullet_short1_micros = micros();
+      Serial.println(bullet_short1_micros);
     }
     if (bullet_counter == 5) {
       bullet_counter = 0;
-      bullet_firingRate = 5000000 / (micros() - bullet_short1_micros);
+      bullet_firingRate = 60*5000000 / (micros() - bullet_short1_micros);
+      Serial.println(micros());
+      Serial.println(" ");
     }
 
     display_displayInfo();
