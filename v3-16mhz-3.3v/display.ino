@@ -16,14 +16,7 @@ void display_displayInfo() {
   display.setCursor(0, 27);
   display.print("J.25");
   display.setCursor(44, 27);
-  display.println((float)bullet_j025, 2);
-
-  display.setCursor(0, 39);
-  display.print("RATE");
-  display.setCursor(44, 39);
-  display.print(bullet_firingRate, DEC);
-
-  
+  display.println((float)bullet_j025, 2); 
 
   display.display();
 }
